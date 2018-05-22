@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+#
 from keras.models import Model #model type
 from keras.layers import Input,Dense #core layers
 from keras.layers import Conv1D, GlobalMaxPooling1D,concatenate #convolution
