@@ -3,6 +3,16 @@
 from keras.models import Model #model type
 from keras.layers import Input,Dense #core layers
 from keras.layers import Conv1D, GlobalMaxPooling1D,concatenate #convolution
+from math import log
+
+# %% Fonction de grabocka pour le calcul des tailles et du nombre de shapelets avec le formalisme deja utilisé
+
+def Grabocka_Shapelets(dataset_length=16637,Series_length=96,Class_number=7,L=0.1,R=3):  # déjà parametré pour notre dataset
+    List_shapelet_length = [int(i*L*Series_length) for i in range(1,R+1)]
+    Liste_end = []
+    for i in range(0,len(List_shapelet_length)):
+        Liste_end.append((int(log((Series_length+1-List_shapelet_length[i])*dataset_length)*(Class_number-1)),List_shapelet_length[i]))
+    return Liste_end
 
 
 # %% definition des modèles : 
