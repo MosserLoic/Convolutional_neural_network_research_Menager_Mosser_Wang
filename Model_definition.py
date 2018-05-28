@@ -46,8 +46,8 @@ def define_model_conv_mult(Liste_Shapelets,regulation):
     return model
 
 # %% train fonction
-    
-def train_model(model ,X_train ,Y_train ,X_test ,Y_test ,X_validation ,Y_validation ,nb_epoch,ver=0):
-    History = model.fit(X_train,Y_train,nb_epoch=nb_epoch,validation_data=(X_validation,Y_validation),verbose=ver)
+
+def train_model(model ,X_train ,Y_train ,X_test ,Y_test ,X_validation ,Y_validation ,nb_epoch,Callbacks = [None],ver = 0):
+    History = model.fit(X_train,Y_train,epochs=nb_epoch,validation_data=(X_validation,Y_validation), callbacks=Callbacks,verbose=ver)
     result = model.evaluate(X_test, Y_test,verbose=0)
     return (model ,result[1], History)
