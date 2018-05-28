@@ -149,83 +149,45 @@ class Plot_acc_Losses_during_train(keras.callbacks.Callback):
 # %% Callbacks : Analyse de shapelet en live
 
 class Shapelet_Analysis(keras.callbacks.Callback):
-    def __init__(self,Model,num_couche_conv,X_train,num_shapelet=0):
+    
+    def __init__(self,Model,num_couche_conv,X_train,num_shapelet=0,nb_shapelets = 3):
+
+        self.nb_shapelets = nb_shapelets
         self.modele = Model
         self.iterateur = 0
         self.num_couche_conv = num_couche_conv
         self.num_shapelet = num_shapelet
         self.X_train = X_train
-        self.sauvegarde_shapelets_1 = []
-        self.sauvegarde_shapelets_2 = []
-        self.sauvegarde_shapelets_3 = []
+        self.sauvegarde_shapelets = {}
+        
+        for i in range(0,self.nb_shapelets):
+            self.sauvegarde_shapelets[i] = []
 
     def on_epoch_end(self,epoch,logs = {}):
         self.iterateur+=1
-        self.sauvegarde_shapelets_1.append(Shapelet_recup(self.modele,self.num_couche_conv,num_shapelet=0))
-        self.sauvegarde_shapelets_2.append(Shapelet_recup(self.modele,self.num_couche_conv+1,num_shapelet=0))
-        self.sauvegarde_shapelets_3.append(Shapelet_recup(self.modele,self.num_couche_conv+2,num_shapelet=0))
-
+        for i in range(0,self.nb_shapelets):
+            self.sauvegarde_shapelets[i].append(Shapelet_recup(self.modele,self.num_couche_conv+i,num_shapelet=0))
 
     def on_train_end( self, epoch, logs={} ):
-        
-        ((X_curve,Y_curve),(X_shapelet,Y_Shapelet))=Shapelet_Analysis_Function(self.modele,self.num_couche_conv,self.X_train,self.num_shapelet)
-        plt.plot(X_curve,Y_curve,"r-")
-        plt.plot(X_shapelet,Y_Shapelet,"b-")
-        plt.title("visualisation d'un shapelet à l'epoch n° " + str(self.iterateur))
-        plt.xlabel("Echantillons temporels")
-        plt.ylabel("Grandeur physique associée au Dataset")
-        plt.savefig("./Figures/fig_9_"+str(self.iterateur)+".png")
-        plt.clf()
-        print(self.iterateur)
-        for i in range(0,len(self.sauvegarde_shapelets_1)-1):
+        for j in range(0,self.nb_shapelets):
+            ((X_curve,Y_curve),(X_shapelet,Y_Shapelet))=Shapelet_Analysis_Function(self.modele,self.num_couche_conv+j,self.X_train,self.num_shapelet)
             plt.plot(X_curve,Y_curve,"r-")
-            Y_Shapelet =self.sauvegarde_shapelets_1[i]
             plt.plot(X_shapelet,Y_Shapelet,"b-")
-            plt.title("visualisation d'un shapelet à l'epoch n° " + str(i+1))
+            plt.title("visualisation d'un shapelet à l'epoch n° " + str(self.iterateur))
             plt.xlabel("Echantillons temporels")
             plt.ylabel("Grandeur physique associée au Dataset")
-            plt.savefig("./Figures/fig_9_"+str(i+1)+".png")
+            plt.savefig("./Figures/fig_"+str(len(X_shapelet))+"_"+str(self.iterateur)+".png")
             plt.clf()
-            print(i)
-            
-        ((X_curve,Y_curve),(X_shapelet,Y_Shapelet))=Shapelet_Analysis_Function(self.modele,self.num_couche_conv,self.X_train,self.num_shapelet)
-        plt.plot(X_curve,Y_curve,"r-")
-        plt.plot(X_shapelet,Y_Shapelet,"b-")
-        plt.title("visualisation d'un shapelet à l'epoch n° " + str(self.iterateur))
-        plt.xlabel("Echantillons temporels")
-        plt.ylabel("Grandeur physique associée au Dataset")
-        plt.savefig("./Figures/fig_19_"+str(self.iterateur)+".png")
-        plt.clf()
-        print(self.iterateur)
-        for i in range(0,len(self.sauvegarde_shapelets)-1):
-            plt.plot(X_curve,Y_curve,"r-")
-            Y_Shapelet =self.sauvegarde_shapelets[i]
-            plt.plot(X_shapelet,Y_Shapelet,"b-")
-            plt.title("visualisation d'un shapelet à l'epoch n° " + str(i+1))
-            plt.xlabel("Echantillons temporels")
-            plt.ylabel("Grandeur physique associée au Dataset")
-            plt.savefig("./Figures/fig_19_"+str(i+1)+".png")
-            plt.clf()
-            print(i)
-            
-        ((X_curve,Y_curve),(X_shapelet,Y_Shapelet))=Shapelet_Analysis_Function(self.modele,self.num_couche_conv,self.X_train,self.num_shapelet)
-        plt.plot(X_curve,Y_curve,"r-")
-        plt.plot(X_shapelet,Y_Shapelet,"b-")
-        plt.title("visualisation d'un shapelet à l'epoch n° " + str(self.iterateur))
-        plt.xlabel("Echantillons temporels")
-        plt.ylabel("Grandeur physique associée au Dataset")
-        plt.savefig("./Figures/fig_29_"+str(self.iterateur)+".png")
-        plt.clf()
-        print(self.iterateur)
-        for i in range(0,len(self.sauvegarde_shapelets)-1):
-            plt.plot(X_curve,Y_curve,"r-")
-            Y_Shapelet =self.sauvegarde_shapelets[i]
-            plt.plot(X_shapelet,Y_Shapelet,"b-")
-            plt.title("visualisation d'un shapelet à l'epoch n° " + str(i+1))
-            plt.xlabel("Echantillons temporels")
-            plt.ylabel("Grandeur physique associée au Dataset")
-            plt.savefig("./Figures/fig_29_"+str(i+1)+".png")
-            plt.clf()
-            print(i)
-            
-
+            print("taille x = ",len(X_shapelet)," taille y = ",len(Y_Shapelet))
+    
+            print(self.iterateur)
+            for i in range(0,len(self.sauvegarde_shapelets[j])-1):
+                plt.plot(X_curve,Y_curve,"r-")
+                Y_Shapelet =self.sauvegarde_shapelets[j][i]
+                print("taille x = ",len(X_shapelet)," taille y = ",len(Y_Shapelet))
+                plt.plot(X_shapelet,Y_Shapelet,"b-")
+                plt.title("visualisation d'un shapelet à l'epoch n° " + str(i+1))
+                plt.xlabel("Echantillons temporels")
+                plt.ylabel("Grandeur physique associée au Dataset")
+                plt.savefig("./Figures/fig_"+str(len(X_shapelet))+"_"+str(i+1)+".png")
+                plt.clf()
